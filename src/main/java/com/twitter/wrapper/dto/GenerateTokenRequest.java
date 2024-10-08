@@ -19,4 +19,6 @@ public class GenerateTokenRequest {
     private String accessToken;
     @NotNull(message = "tokenSecret must not be null")
     private String tokenSecret;
+
+
 }
