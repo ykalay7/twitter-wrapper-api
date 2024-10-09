@@ -1,0 +1,124 @@
+{
+	"info": {
+		"_postman_id": "fb7f5f61-a8bf-4030-8538-87b6c0695013",
+		"name": "Twitter Wrapper Api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "18353055"
+	},
+	"item": [
+		{
+			"name": "tweets",
+			"item": [
+				{
+					"name": "Create new tweet",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{bearerToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"message\":\"test1234\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{remoteUrl}}/api/tweet/create",
+							"host": [
+								"{{remoteUrl}}"
+							],
+							"path": [
+								"api",
+								"tweet",
+								"create"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Create token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();\r",
+							"var _bearerToken = jsonData.bearerToken;\r",
+							"console.log(jsonData)\r",
+							"console.log(_bearerToken)\r",
+							"pm.environment.set(\"bearerToken\", _bearerToken);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "AAAAAAAAAAAAAAAAAAAAACncwAEAAAAAVSn4%2BM29v7SDUpha0FRIloQ%2BLlI%3Du1LO4vlDPTS1ntVaDi4Lobte6muFtiNHhKO1xwaCsyA8MuuhiK",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"consumerKey\":{{consumer_key}},\r\n    \"consumerKeySecret\":{{consumer_key_secret}},\r\n    \"accessToken\":{{access_token}},\r\n    \"tokenSecret\":{{token_secret}}\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{remoteUrl}}/auth/createToken",
+					"host": [
+						"{{remoteUrl}}"
+					],
+					"path": [
+						"auth",
+						"createToken"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "bearerToken",
+			"value": ""
+		}
+	]
+}
