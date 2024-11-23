@@ -6,6 +6,7 @@ import com.twitter.wrapper.dto.GenerateTokenRequest;
 import com.twitter.wrapper.dto.GenerateTokenResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,8 +22,10 @@ public class AuthController {
     }
 
     @PostMapping("/createToken")
-    public GenerateTokenResponse generateToken(GenerateTokenRequest generateTokenRequest) {
-        TokenKey tokenKey = aUthService.generateToken(generateTokenRequest);
+    public GenerateTokenResponse generateToken(@RequestBody GenerateTokenRequest generateTokenRequest) {
+        TokenKey tokenKey = aUthService.generateToken(
+                generateTokenRequest.getConsumerKey(), generateTokenRequest.getConsumerKeySecret(),
+                generateTokenRequest.getAccessToken(), generateTokenRequest.getTokenSecret());
         return new GenerateTokenResponse(tokenKey.getBearerToken());
     }
 }

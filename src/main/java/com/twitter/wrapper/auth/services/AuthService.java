@@ -1,9 +1,11 @@
 package com.twitter.wrapper.auth.services;
 
+import com.twitter.wrapper.auth.AuthenticationException;
 import com.twitter.wrapper.auth.Token;
 import com.twitter.wrapper.auth.TokenKey;
-import com.twitter.wrapper.dto.GenerateTokenRequest;
 import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
@@ -25,15 +27,30 @@ public class AuthService {
     }
 
     @Nonnull
-    public TokenKey generateToken(@Nonnull GenerateTokenRequest generateTokenRequest) {
+    public TokenKey generateToken(@Nonnull String consumerKey, @Nonnull String consumerKeySecret,
+                                  @Nonnull String accessToken, @Nonnull String tokenSecret) {
         TokenKey tokenKey = new TokenKey();
         tokenKey.setBearerToken(generateBearerToken());
-        Token token = createToken(generateTokenRequest);
+        Token token = createToken(consumerKey, consumerKeySecret, accessToken, tokenSecret);
         tokenCache.put(tokenKey, token);
         return tokenKey;
     }
 
-    public boolean authenticate(TokenKey tokenKey) {
+    @Nonnull
+    public Token retrieveToken(@Nonnull String authHeader) throws AuthenticationException {
+        TokenKey tokenKey = parseBearerHeader(authHeader);
+        Token token = tokenCache.get(tokenKey);
+        if(token == null) {
+            throw new AuthenticationException("Token is not found internally, request is unauthorised");
+        }
+        return token;
+    }
+
+    public boolean authenticate(@Nonnull String authHeader) {
+        TokenKey tokenKey = parseBearerHeader(authHeader);
+        if(tokenKey == null) {
+            return false;
+        }
         return tokenCache.containsKey(tokenKey);
     }
 
@@ -44,7 +61,20 @@ public class AuthService {
     }
 
     @Nonnull
-    private Token createToken(@Nonnull GenerateTokenRequest generateTokenRequest) {
-        return new Token(generateTokenRequest.getConsumerKey(), generateTokenRequest.getConsumerKeySecret(), generateTokenRequest.getAccessToken(), generateTokenRequest.getTokenSecret());
+    private Token createToken(@Nonnull String consumerKey, @Nonnull String consumerKeySecret,
+                              @Nonnull String accessToken, @Nonnull String tokenSecret) {
+        return new Token(consumerKey, consumerKeySecret, accessToken, tokenSecret);
+    }
+
+    @Nullable
+    private TokenKey parseBearerHeader(String authorizationHeader) {
+        if(Strings.isEmpty(authorizationHeader)) {
+            return null;
+        }
+        String[] splitHeader = authorizationHeader.split("Bearer ");
+        if(splitHeader.length != 2) {
+            return null;
+        }
+        return new TokenKey(splitHeader[1]);
     }
 }
