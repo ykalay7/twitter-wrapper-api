@@ -5,10 +5,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter
-@Setter
-@NoArgsConstructor
+import java.util.List;
+
 @AllArgsConstructor
-public class CreateTweetResponse {
-    TweetDto tweet;
+@NoArgsConstructor
+@Setter
+@Getter
+public class ListRecentTweetResponse {
+    private List<TweetDto> recentTweets;
 }

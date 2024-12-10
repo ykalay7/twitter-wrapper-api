@@ -3,8 +3,11 @@ package com.twitter.wrapper.api.tweet;
 import com.twitter.wrapper.api.Tweet;
 import com.twitter.wrapper.api.ext.TwitterExtCreateTweetRequest;
 import com.twitter.wrapper.api.ext.TwitterExtCreateTweetResponse;
+import com.twitter.wrapper.api.ext.TwitterExtDeleteTweetResponse;
 import com.twitter.wrapper.auth.Token;
+import com.twitter.wrapper.repository.TweetCacheRepository;
 import jakarta.annotation.Nonnull;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -21,7 +24,11 @@ import java.util.*;
 public class TweetService {
 
     private static final String TWEET_PATH = "tweets";
-
+    private static final String SPLITTER = "/";
+    private final TweetCacheRepository tweetCacheRepository;
+    public TweetService(TweetCacheRepository tweetCacheRepository) {
+        this.tweetCacheRepository = tweetCacheRepository;
+    }
     public Tweet createNewTweet(String message, Token token) throws TweetServiceException {
         WebClient twitterClient = createTwitterClient(token, HttpMethod.POST.toString());
         TwitterExtCreateTweetResponse twitterExtCreateTweetResponse = twitterClient.post()
@@ -31,7 +38,29 @@ public class TweetService {
         if(twitterExtCreateTweetResponse == null || twitterExtCreateTweetResponse.getData() == null) {
             throw new TweetServiceException("Internal error, tweeter creation is returned null from external api");
         }
-        return convertExternalResponseToTweet(twitterExtCreateTweetResponse);
+        Tweet tweet = convertExternalResponseToTweet(twitterExtCreateTweetResponse);
+        this.tweetCacheRepository.addNewTweet(tweet);
+        return tweet;
+    }
+
+    public boolean deleteTweetById(@Nonnull Long id, Token token) throws TweetServiceException {
+        WebClient twitterClient = createTwitterClient(token, HttpMethod.DELETE.toString(), createDeleteUrlAddition(id));
+        TwitterExtDeleteTweetResponse twitterExtDeleteTweetResponse = twitterClient.delete()
+                .retrieve()
+                .bodyToMono(TwitterExtDeleteTweetResponse.class).block();
+        if(twitterExtDeleteTweetResponse == null || twitterExtDeleteTweetResponse.getData() == null || twitterExtDeleteTweetResponse.getData().getDeleted() == null) {
+            throw new TweetServiceException("Internal error, tweeter deletion is returned null from external api");
+        }
+        this.tweetCacheRepository.deleteTweet(id);
+        return twitterExtDeleteTweetResponse.getData().getDeleted();
+    }
+
+    public List<Tweet> listRecentTweets() {
+        return tweetCacheRepository.listRecentTweets();
+    }
+
+    private static String createDeleteUrlAddition(Long twitterId) {
+        return SPLITTER + twitterId;
     }
 
     @Nonnull
@@ -40,9 +69,9 @@ public class TweetService {
     }
 
     @Nonnull
-    private WebClient createTwitterClient(@Nonnull Token token, String method) throws TweetServiceException {
+    private WebClient createTwitterClient(@Nonnull Token token, String method, @Nonnull String urlAddition) throws TweetServiceException {
         try {
-            String baseUrl = "https://api.twitter.com/2/".concat(TWEET_PATH);
+            String baseUrl = "https://api.twitter.com/2/".concat(TWEET_PATH).concat(urlAddition);
             return WebClient.builder()
                     .baseUrl(baseUrl)
                     .defaultHeader("Authorization", generateOAuthHeader(token.getConsumerKey(), token.getConsumerKeySecret(), token.getAccessToken(), token.getTokenSecret(), baseUrl, method))
@@ -52,6 +81,11 @@ public class TweetService {
         } catch (Exception e) {
             throw new TweetServiceException("Twitter-api client creation is failed", e);
         }
+    }
+
+    @Nonnull
+    private WebClient createTwitterClient(@Nonnull Token token, String method) throws TweetServiceException {
+        return createTwitterClient(token, method, Strings.EMPTY);
     }
 
     private String generateOAuthHeader(String consumerKey, String consumerSecret, String token, String tokenSecret, String baseUrl, String method) throws Exception {

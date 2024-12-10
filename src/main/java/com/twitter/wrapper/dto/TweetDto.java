@@ -9,6 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateTweetResponse {
-    TweetDto tweet;
+public class TweetDto {
+    Long tweetId;
+    String message;
 }

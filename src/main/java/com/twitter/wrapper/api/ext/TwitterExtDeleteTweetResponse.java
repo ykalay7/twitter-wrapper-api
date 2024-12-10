@@ -1,14 +1,14 @@
-package com.twitter.wrapper.dto;
+package com.twitter.wrapper.api.ext;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateTweetResponse {
-    TweetDto tweet;
+@Getter
+@Setter
+public class TwitterExtDeleteTweetResponse {
+    private DeleteTweetData data;
 }

@@ -9,6 +9,6 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateTweetResponse {
-    TweetDto tweet;
+public class DeleteTweetResponse {
+    Boolean isDeleted;
 }
