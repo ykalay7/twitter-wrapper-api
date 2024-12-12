@@ -16,7 +16,11 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									""
+									"var jsonData = pm.response.json();\r",
+									"var tweetId = jsonData.tweetId;\r",
+									"console.log(jsonData)\r",
+									"console.log(tweetId)\r",
+									"pm.environment.set(\"tweetId\", tweetId);"
 								],
 								"type": "text/javascript",
 								"packages": {}
@@ -38,6 +42,56 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
+							"raw": "{\r\n    \"message\":\"heyhey121\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{remoteUrl}}/api/tweet/create",
+							"host": [
+								"{{remoteUrl}}"
+							],
+							"path": [
+								"api",
+								"tweet",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete tweet",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{bearerToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
 							"raw": "{\r\n    \"message\":\"test1234\"\r\n}",
 							"options": {
 								"raw": {
@@ -54,6 +108,59 @@
 								"api",
 								"tweet",
 								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "listRecentTweets",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{bearerToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{remoteUrl}}/api/tweet/listRecent",
+							"host": [
+								"{{remoteUrl}}"
+							],
+							"path": [
+								"api",
+								"tweet",
+								"listRecent"
 							]
 						}
 					},
@@ -94,7 +201,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"consumerKey\":{{consumer_key}},\r\n    \"consumerKeySecret\":{{consumer_key_secret}},\r\n    \"accessToken\":{{access_token}},\r\n    \"tokenSecret\":{{token_secret}}\r\n}",
+					"raw": "{\r\n    \"consumerKey\":\"{{consumer_key}}\",\r\n    \"consumerKeySecret\":\"{{consumer_key_secret}}\",\r\n    \"accessToken\":{{access_token}},\r\n    \"tokenSecret\":{{token_secret}}\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
