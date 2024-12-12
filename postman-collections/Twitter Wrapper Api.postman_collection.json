@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "fb7f5f61-a8bf-4030-8538-87b6c0695013",
+		"_postman_id": "1c0a2042-a7ef-4728-91aa-7fb6d147bd85",
 		"name": "Twitter Wrapper Api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "18353055"
+		"_exporter_id": "37961892"
 	},
 	"item": [
 		{
@@ -42,7 +42,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"message\":\"heyhey121\"\r\n}",
+							"raw": "{\r\n    \"message\":\"hey ho \"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -92,7 +92,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"message\":\"test1234\"\r\n}",
+							"raw": "",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -100,14 +100,15 @@
 							}
 						},
 						"url": {
-							"raw": "{{remoteUrl}}/api/tweet/create",
+							"raw": "{{remoteUrl}}/api/tweet/delete/{{tweetId}}",
 							"host": [
 								"{{remoteUrl}}"
 							],
 							"path": [
 								"api",
 								"tweet",
-								"create"
+								"delete",
+								"{{tweetId}}"
 							]
 						}
 					},
@@ -201,7 +202,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"consumerKey\":\"{{consumer_key}}\",\r\n    \"consumerKeySecret\":\"{{consumer_key_secret}}\",\r\n    \"accessToken\":{{access_token}},\r\n    \"tokenSecret\":{{token_secret}}\r\n}",
+					"raw": "{\r\n    \"consumerKey\":\"{{consumer_key}}\",\r\n    \"consumerKeySecret\":\"{{consumer_key_secret}}\",\r\n    \"accessToken\":\"{{access_token}}\",\r\n    \"tokenSecret\":\"{{token_secret}}\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
